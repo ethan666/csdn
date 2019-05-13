@@ -1,18 +1,29 @@
 <template>
   <div class="home">
-    <h1>自助下载</h1>
+    <h1 class="title">自助下载</h1>
     <a-form :form="form">
       <a-form-item
         :label-col="formItemLayout.labelCol"
         :wrapper-col="formItemLayout.wrapperCol"
-        label="Name"
       >
         <a-input
           v-decorator="[
-            'username',
-            {rules: [{ required: true, message: 'Please input your name' }]}
+            'card',
+            {rules: [{ required: true, message: '请输入您购买得到的卡密' }]}
           ]"
-          placeholder="Please input your name"
+          placeholder="请输入您购买得到的卡密"
+        />
+      </a-form-item>
+      <a-form-item
+        :label-col="formItemLayout.labelCol"
+        :wrapper-col="formItemLayout.wrapperCol"
+      >
+        <a-input
+          v-decorator="[
+            'link',
+            {rules: [{ required: true, message: '请输入您要下载的CSDN链接' }]}
+          ]"
+          placeholder="请输入您要下载的CSDN链接"
         />
       </a-form-item>
       <a-form-item
@@ -20,10 +31,11 @@
         :wrapper-col="formTailLayout.wrapperCol"
       >
         <a-button
+          class="btn"
           type="primary"
           @click="check"
         >
-          Check
+          下载
         </a-button>
       </a-form-item>
     </a-form>
@@ -36,12 +48,12 @@
 
 <script>
 const formItemLayout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 8 },
+  labelCol: { span: 0 },
+  wrapperCol: { span: 24 },
 };
 const formTailLayout = {
   labelCol: { span: 4 },
-  wrapperCol: { span: 8, offset: 4 },
+  wrapperCol: { span: 24 },
 };
 
 export default {
@@ -73,3 +85,19 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.title{
+  color:#fff;
+}
+
+.btn{
+  width: 100%;
+}
+
+.info1{
+  text-align: left;
+}
+</style>
+
+
