@@ -20,7 +20,7 @@
       >
         <a-input
           v-decorator="[
-            'link',
+            'url',
             {rules: [{ required: true, message: '请输入您要下载的CSDN链接' }]}
           ]"
           placeholder="请输入您要下载的CSDN链接"
@@ -47,6 +47,10 @@
 </template>
 
 <script>
+import axios from 'axios'
+import { sendRequest, get, postParam, checkFile, downloadFile } from '../request.js'
+import { setTimeout } from 'timers';
+
 const formItemLayout = {
   labelCol: { span: 0 },
   wrapperCol: { span: 24 },
@@ -55,6 +59,8 @@ const formTailLayout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 24 },
 };
+
+let resourceId
 
 export default {
   name: 'home',
@@ -69,19 +75,54 @@ export default {
   methods: {
     check  () {
       this.form.validateFields(
-        (err) => {
+        (err, values) => {
           if (!err) {
-            console.info('success');
+            sendRequest(postParam, values)
+              .then(response=>{
+                let message;
+                switch (response.code) {
+                  case 0:
+                    message='success'
+                    resourceId=response.data.resourceId
+                    setTimeout(this.checkFilePrepared, 10000)
+                    break;
+                  case 1:
+                    message='卡密不存在'
+                    break;
+                  case 2:
+                    message='卡密被使用'
+                    break;
+                  case 3:
+                    message='csdn地址不正确'
+                    break;
+                  
+                  default:
+                    break;
+                }
+                if(message){
+                  this.$message.info(message)
+                }
+              })
+              .catch(error=>{
+                this.$message.info(error.message)
+              })
           }
         },
       );
     },
-    handleChange  (e) {
-      this.checkNick = e.target.checked;
-      this.$nextTick(() => {
-        this.form.validateFields(['nickname'], { force: true });
-      });
-    },
+    checkFilePrepared(){
+      sendRequest(checkFile, {resourceId})
+        .then(response=>{
+          if(response.code !== 1){
+            //轮询
+            setTimeout(this.checkFilePrepared, 1000)
+            this.$message.info('轮询')
+          }else{
+            //开始下载文件
+            get(downloadFile, {resourceId})
+          }
+        })
+    }
   }
 }
 </script>
