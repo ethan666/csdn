@@ -8,10 +8,11 @@
       >
         <a-input
           v-decorator="[
-            'card',
+            'code',
             {rules: [{ required: true, message: '请输入您购买得到的卡密' }]}
           ]"
           placeholder="请输入您购买得到的卡密"
+          :defalutValue="code"
         />
       </a-form-item>
       <a-form-item
@@ -43,13 +44,17 @@
       <p>不限积分下载，一个卡密仅可下载一个CSDN资源 </p>
       <p>注：一次不能同时下载多个CSDN资源 </p>
     </div>
+
   </div>
 </template>
 
 <script>
 import axios from 'axios'
-import { sendRequest, get, postParam, checkFile, downloadFile } from '../request.js'
+import { sendRequest, postParam, checkFile, downloadFile } from '../request.js'
+import { fileServer } from '../env.js'
+import { code } from '../global.js'
 import { setTimeout } from 'timers';
+import store from '../store.js'
 
 const formItemLayout = {
   labelCol: { span: 0 },
@@ -70,32 +75,48 @@ export default {
       formItemLayout,
       formTailLayout,
       form: this.$form.createForm(this),
+      code,
     };
+  },
+  computed: {
+    loading: {
+      set: function(value){
+        store.setLoading(value)
+      },
+      get: function(){
+        return store.state.loading
+      }
+    }
   },
   methods: {
     check  () {
+      const _this = this
       this.form.validateFields(
         (err, values) => {
           if (!err) {
+            _this.loading = true
             sendRequest(postParam, values)
               .then(response=>{
+                const {data} = response
                 let message;
-                switch (response.code) {
+                switch (data.code) {
                   case 0:
-                    message='success'
-                    resourceId=response.data.resourceId
+                    message='卡密验证成功，下载中！'
+                    resourceId=data.data.resourceid
                     setTimeout(this.checkFilePrepared, 10000)
                     break;
                   case 1:
                     message='卡密不存在'
+                    _this.loading = false
                     break;
                   case 2:
                     message='卡密被使用'
+                    _this.loading = false
                     break;
                   case 3:
                     message='csdn地址不正确'
+                    _this.loading = false
                     break;
-                  
                   default:
                     break;
                 }
@@ -104,22 +125,26 @@ export default {
                 }
               })
               .catch(error=>{
-                this.$message.info(error.message)
+                this.$message.info(`${error.message},请稍后再试！`)
+                _this.loading = false
               })
           }
         },
       );
     },
     checkFilePrepared(){
+      const _this = this
       sendRequest(checkFile, {resourceId})
         .then(response=>{
-          if(response.code !== 1){
+          const { data } = response;
+          if(data.code !== 1){
             //轮询
             setTimeout(this.checkFilePrepared, 1000)
-            this.$message.info('轮询')
+            // this.$message.info('轮询')
           }else{
             //开始下载文件
-            get(downloadFile, {resourceId})
+            _this.loading = false
+            window.location = fileServer + downloadFile + '/' + resourceId;
           }
         })
     }
@@ -139,6 +164,7 @@ export default {
 .info1{
   text-align: left;
 }
+
 </style>
 
 

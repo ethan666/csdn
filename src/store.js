@@ -1,16 +1,12 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-
-Vue.use(Vuex)
-
-export default new Vuex.Store({
+const store = {
+  debug: true,
   state: {
-
+    loading: false
   },
-  mutations: {
-
-  },
-  actions: {
-
+  setLoading(value){
+    if (this.debug) console.log('setLoading triggered with', value)
+    this.state.loading = value
   }
-})
+}
+
+export default store
