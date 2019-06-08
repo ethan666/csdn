@@ -50,7 +50,7 @@
 
 <script>
 import axios from 'axios'
-import { sendRequest, postParam, checkFile, downloadFile } from '../request.js'
+import { sendRequest, postParam, checkFile, getFileUrl } from '../request.js'
 import { code } from '../global.js'
 import { setTimeout } from 'timers';
 import store from '../store.js'
@@ -143,10 +143,7 @@ export default {
               setTimeout(this.checkFilePrepared, 1000)
               break;
             case 1:
-              //开始下载文件
-              _this.loading = false
-              // window.location = fileServer + downloadFile + '/' + resourceId;
-              window.location = data.data.resourceId;
+              this.getFileUrl();
               break;
             case 2:
               message = '发生异常，请稍后再试'
@@ -163,6 +160,14 @@ export default {
           if(message){
             this.$message.info(message)
           }
+        })
+    },
+    getFileUrl(){
+      getFileUrl({resourceId})
+        .then(response => {
+          //开始下载文件
+          _this.loading = false
+          window.location = response;
         })
     }
   }
