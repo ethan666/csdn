@@ -12,7 +12,6 @@
             {rules: [{ required: true, message: '请输入已使用的卡密下载历史的文件' }]}
           ]"
           placeholder="请输入已使用的卡密下载历史的文件"
-          :defalutValue="code"
         />
       </a-form-item>
       <a-form-item
@@ -37,7 +36,7 @@
 
 <script>
 import axios from 'axios'
-import { sendRequest, historyReq, checkFile, downloadFile } from '../request.js'
+import { historyDown, checkDownloadComplete, getFileUrl, activate } from '../request.js'
 import { fileServer } from '../env.js'
 import { code } from '../global.js'
 import { setTimeout } from 'timers';
@@ -62,7 +61,6 @@ export default {
       formItemLayout,
       formTailLayout,
       form: this.$form.createForm(this),
-      code,
     };
   },
   computed: {
@@ -82,7 +80,7 @@ export default {
         (err, values) => {
           if (!err) {
             _this.loading = true
-            sendRequest(historyReq, values)
+            historyDown(values)
               .then(response=>{
                 const {data} = response
                 let message;
@@ -117,7 +115,7 @@ export default {
     },
     checkFilePrepared(){
       const _this = this
-      sendRequest(checkFile, {resourceId})
+      checkDownloadComplete({resourceId})
         .then(response=>{
           const { data } = response;
           let message;
@@ -127,10 +125,7 @@ export default {
               setTimeout(this.checkFilePrepared, 1000)
               break;
             case 1:
-              //开始下载文件
-              _this.loading = false
-              // window.location = fileServer + downloadFile + '/' + resourceId;
-              window.location = data.data.resourceId;
+             this.getFileUrl();
               break;
             case 2:
               message = '发生异常，请稍后再试'
@@ -147,6 +142,16 @@ export default {
           if(message){
             this.$message.info(message)
           }
+        })
+
+    },
+    getFileUrl(){
+      const _this = this
+      getFileUrl(resourceId)
+        .then(response => {
+          //开始下载文件
+          _this.loading = false
+          window.location = response.data;
         })
     }
   }

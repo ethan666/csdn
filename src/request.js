@@ -2,27 +2,49 @@ import axios from 'axios'
 import qs from 'qs'
 import { requestServer } from './env.js'
 
-export const postParam = '/home/activate'
+const activateApi = '/home/activate'
 
-export const checkFile = '/home/downloadComplete'
+const downloadCompleteApi = '/home/downloadComplete'
 
-export const historyReq = '/home/HistoryDown'
+const historyApi = '/home/HistoryDown'
 
 const downloadFile = '/home/getdownurl'
 
-export function sendRequest(url, data){
+
+export function activate(data){
+    const params = qs.stringify(data) 
     return axios({
         method: 'post',
-        url: requestServer + url,
+        url: requestServer + activateApi,
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        data: qs.stringify(data),
+        data: params
     })
 }
 
-export function getFileUrl(data){
-    const params = qs.stringify(data)
+export function checkDownloadComplete(data){
+    const params = qs.stringify(data) 
+    return axios({
+        method: 'post',
+        url: requestServer + downloadCompleteApi,
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: params
+    })
+}
+
+export function getFileUrl(id){
+    // const params = qs.stringify(data)
     return axios({
         method: 'get',
-        url: requestServer + downloadFile + '?' + params
+        url: requestServer + downloadFile + '/' + id
+    })
+}
+
+export function historyDown(data){
+    const params = qs.stringify(data) 
+    return axios({
+        method: 'post',
+        url: requestServer + historyApi,
+        headers: { 'content-type': 'application/x-www-form-urlencoded' },
+        data: params
     })
 }

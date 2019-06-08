@@ -50,7 +50,7 @@
 
 <script>
 import axios from 'axios'
-import { sendRequest, postParam, checkFile, getFileUrl } from '../request.js'
+import { activate, checkDownloadComplete, getFileUrl } from '../request.js'
 import { code } from '../global.js'
 import { setTimeout } from 'timers';
 import store from '../store.js'
@@ -94,7 +94,7 @@ export default {
         (err, values) => {
           if (!err) {
             _this.loading = true
-            sendRequest(postParam, values)
+            activate(values)
               .then(response=>{
                 const {data} = response
                 let message;
@@ -133,7 +133,7 @@ export default {
     },
     checkFilePrepared(){
       const _this = this
-      sendRequest(checkFile, {resourceId})
+      checkDownloadComplete({resourceId})
         .then(response=>{
           const { data } = response;
           let message;
@@ -163,11 +163,12 @@ export default {
         })
     },
     getFileUrl(){
-      getFileUrl({resourceId})
+      const _this = this
+      getFileUrl(resourceId)
         .then(response => {
           //开始下载文件
           _this.loading = false
-          window.location = response;
+          window.location = response.data;
         })
     }
   }
