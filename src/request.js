@@ -6,7 +6,7 @@ export const postParam = '/home/activate'
 
 export const checkFile = '/home/downloadComplete'
 
-export const downloadFile = '/home/returnfile'
+export const downloadFile = '/home/getdownurl'
 
 export const historyReq = '/home/HistoryDown'
 

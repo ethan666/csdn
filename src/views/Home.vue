@@ -51,7 +51,6 @@
 <script>
 import axios from 'axios'
 import { sendRequest, postParam, checkFile, downloadFile } from '../request.js'
-import { fileServer } from '../env.js'
 import { code } from '../global.js'
 import { setTimeout } from 'timers';
 import store from '../store.js'
@@ -137,14 +136,32 @@ export default {
       sendRequest(checkFile, {resourceId})
         .then(response=>{
           const { data } = response;
-          if(data.code !== 1){
-            //轮询
-            setTimeout(this.checkFilePrepared, 1000)
-            // this.$message.info('轮询')
-          }else{
-            //开始下载文件
-            _this.loading = false
-            window.location = fileServer + downloadFile + '/' + resourceId;
+          let message;
+          switch (data.code) {
+            case 0:
+              //轮询
+              setTimeout(this.checkFilePrepared, 1000)
+              break;
+            case 1:
+              //开始下载文件
+              _this.loading = false
+              // window.location = fileServer + downloadFile + '/' + resourceId;
+              window.location = data.data.resourceId;
+              break;
+            case 2:
+              message = '发生异常，请稍后再试'
+              break;
+            case 3:
+              message = '有版权问题'
+              break;
+            case 4:
+              message = '网址不存在'
+              break;
+            default:
+              break;
+          }
+          if(message){
+            this.$message.info(message)
           }
         })
     }

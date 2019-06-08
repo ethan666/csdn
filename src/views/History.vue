@@ -32,7 +32,6 @@
       <p>不限积分下载，一个卡密仅可下载一个CSDN资源 </p>
       <p>注：一次不能同时下载多个CSDN资源 </p>
     </div>
-    <a-span v-if="loading" size='large'/>
   </div>
 </template>
 
@@ -42,6 +41,7 @@ import { sendRequest, historyReq, checkFile, downloadFile } from '../request.js'
 import { fileServer } from '../env.js'
 import { code } from '../global.js'
 import { setTimeout } from 'timers';
+import store from '../store.js'
 
 const formItemLayout = {
   labelCol: { span: 0 },
@@ -63,8 +63,17 @@ export default {
       formTailLayout,
       form: this.$form.createForm(this),
       code,
-      loading: false,
     };
+  },
+  computed: {
+    loading: {
+      set: function(value){
+        store.setLoading(value)
+      },
+      get: function(){
+        return store.state.loading
+      }
+    }
   },
   methods: {
     check  () {
@@ -100,6 +109,7 @@ export default {
               })
               .catch(error=>{
                 this.$message.info(error.message)
+                _this.loading = false
               })
           }
         },
@@ -110,13 +120,32 @@ export default {
       sendRequest(checkFile, {resourceId})
         .then(response=>{
           const { data } = response;
-          if(data.code !== 1){
-            //轮询
-            setTimeout(this.checkFilePrepared, 1000)
-          }else{
-            //开始下载文件
-            _this.loading = false
-            window.location = fileServer + downloadFile + '/' + resourceId;
+          let message;
+          switch (data.code) {
+            case 0:
+              //轮询
+              setTimeout(this.checkFilePrepared, 1000)
+              break;
+            case 1:
+              //开始下载文件
+              _this.loading = false
+              // window.location = fileServer + downloadFile + '/' + resourceId;
+              window.location = data.data.resourceId;
+              break;
+            case 2:
+              message = '发生异常，请稍后再试'
+              break;
+            case 3:
+              message = '有版权问题'
+              break;
+            case 4:
+              message = '网址不存在'
+              break;
+            default:
+              break;
+          }
+          if(message){
+            this.$message.info(message)
           }
         })
     }

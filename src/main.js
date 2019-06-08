@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import '../public/global.css' /*引入公共样式*/
 import {Form, Input, Button, message, Spin} from 'ant-design-vue'
+import '@babel/polyfill'
 
 Vue.config.productionTip = false
 Vue.prototype.$message = message

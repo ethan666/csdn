@@ -1,7 +1,9 @@
 <template>
   <div id="app">
     <div class="containor">
-      <router-view/>
+      <keep-alive>
+        <router-view/>
+      </keep-alive>
       <div id="nav">                   
         <router-link to="/course">查看使用教程</router-link>
         <router-link to="/history">历史订单提取</router-link>
@@ -9,7 +11,7 @@
         <a href="http://wpa.qq.com/msgrd?v=1&amp;uin=7589848&amp;site=qq&amp;menu=yes" target="_blank">技术支持</a>
       </div>
     </div>
-    <div v-if="loading" class="loading-box">
+    <div v-if="shareState.loading" class="loading-box">
       <a-spin size='large'/>
     </div>
   </div>
@@ -21,13 +23,8 @@ import store from './store.js'
 export default {
   data(){
     return {
-       loading: store.state.loading
+      shareState: store.state
     }
-  },
-  computed:{
-    // loading(){
-    //   return store.state.loading;
-    // }
   }
 }
 </script>
@@ -79,6 +76,5 @@ export default {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.2);
-  /* z-index: 1; */
 }
 </style>
