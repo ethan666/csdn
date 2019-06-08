@@ -5,12 +5,13 @@
         <router-view/>
       </keep-alive>
       <div id="nav">                   
-        <router-link to="/course">查看使用教程</router-link>
+        <a @click="clickHandler">查看使用教程</a>
         <router-link to="/history">历史订单提取</router-link>
         <router-link to="/">返回首页</router-link>
         <a href="http://wpa.qq.com/msgrd?v=1&amp;uin=7589848&amp;site=qq&amp;menu=yes" target="_blank">技术支持</a>
       </div>
     </div>
+    <course/>
     <div v-if="shareState.loading" class="loading-box">
       <a-spin size='large'/>
     </div>
@@ -19,12 +20,21 @@
 
 <script>
 import store from './store.js'
+import Course from './views/Course.vue'
 
 export default {
   data(){
     return {
       shareState: store.state
     }
+  },
+  methods:{
+    clickHandler(){
+      store.showCourse(true)
+    }
+  },
+  components:{
+    Course
   }
 }
 </script>
