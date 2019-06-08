@@ -9,10 +9,12 @@
         <a-input
           v-decorator="[
             'code',
-            {rules: [{ required: true, message: '请输入您购买得到的卡密' }]}
+            {
+              rules: [{ required: true, message: '请输入您购买得到的卡密' }],
+              initialValue: code
+            }
           ]"
           placeholder="请输入您购买得到的卡密"
-          :defalutValue="code"
         />
       </a-form-item>
       <a-form-item
@@ -51,7 +53,7 @@
 <script>
 import axios from 'axios'
 import { activate, checkDownloadComplete, getFileUrl } from '../request.js'
-import { code } from '../global.js'
+import { getQueryString } from '../global.js'
 import { setTimeout } from 'timers';
 import store from '../store.js'
 
@@ -74,7 +76,7 @@ export default {
       formItemLayout,
       formTailLayout,
       form: this.$form.createForm(this),
-      code,
+      code: getQueryString('code')
     };
   },
   computed: {

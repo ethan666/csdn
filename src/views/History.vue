@@ -38,7 +38,6 @@
 import axios from 'axios'
 import { historyDown, checkDownloadComplete, getFileUrl, activate } from '../request.js'
 import { fileServer } from '../env.js'
-import { code } from '../global.js'
 import { setTimeout } from 'timers';
 import store from '../store.js'
 
